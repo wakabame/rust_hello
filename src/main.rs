@@ -1,5 +1,5 @@
-mod hello_rust;
+mod thread;
 
 fn main() {
-    hello_rust::main();
+    thread::main();
 }
