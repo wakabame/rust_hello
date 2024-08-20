@@ -1,3 +1,5 @@
+mod hello_rust;
+
 fn main() {
-    println!("Hello, world!");
+    hello_rust::main();
 }
