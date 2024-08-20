@@ -1,5 +1,5 @@
-mod thread;
+mod message_passing;
 
 fn main() {
-    thread::main();
+    message_passing::main();
 }
