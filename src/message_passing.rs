@@ -2,14 +2,41 @@ use std::sync::mpsc;
 use std::thread;
 
 pub fn main() {
-    let (tx, rx) = mpsc::channel();
-    let handle = thread::spawn(move || {
-        // receiver をスレッドに送って, メッセージを受診できる状態にする
-        let data = rx.recv().unwrap();
-        println!("{}", data);
-    });
+    let mut handles = Vec::new();
+    let mut data = vec![1; 10];
+    let mut snd_channels = Vec::new();
+    let mut rcv_channels = Vec::new();
 
-    let _ = tx.send("Hello World!");
+    for _ in 0..10 {
+        // main から各スレッドへのチャンネル
+        let (snd_tx, snd_rx) = mpsc::channel();
+        // 各スレッドから main へのチャンネル
+        let (rcv_tx, rcv_rx) = mpsc::channel();
 
-    let _ = handle.join();
+        snd_channels.push(snd_tx);
+        rcv_channels.push(rcv_rx);
+
+        handles.push(thread::spawn(move || {
+            // receiver をスレッドに送って, メッセージを受診できる状態にする
+            let mut data = snd_rx.recv().unwrap();
+            data += 1;
+            let _ = rcv_tx.send(data);
+        }));
+    }
+
+    // 各スレッドに data の値を送信
+    for x in 0..10 {
+        let _ = snd_channels[x].send(data[x]);
+    }
+
+    // 各スレッドからの結果を data に格納
+    for x in 0..10 {
+        data[x] = rcv_channels[x].recv().unwrap();
+    }
+
+    for handle in handles {
+        let _ = handle.join();
+    }
+
+    dbg!(data);
 }
