@@ -1,3 +1,6 @@
+use std::thread;
+
 pub fn main() {
-    println!("Hello, world!");
+    thread::spawn(|| {println!("Hello, world!");
+});
 }
