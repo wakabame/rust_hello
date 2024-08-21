@@ -1,5 +1,5 @@
-mod message_passing;
+mod future;
 
 fn main() {
-    message_passing::main();
+    future::main();
 }
